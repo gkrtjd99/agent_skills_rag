@@ -1,0 +1,22 @@
+sentence-transformers quick reference for agents.
+
+Commands
+- from sentence_transformers import SentenceTransformer
+- model = SentenceTransformer("all-MiniLM-L6-v2")     # 384-dim, fast, default for this project
+- vectors = model.encode(texts, normalize_embeddings=True)  # returns np.ndarray, shape (n, dim)
+- model.encode(text, convert_to_numpy=True)            # single string → 1-d array
+
+Model candidates
+- all-MiniLM-L6-v2     — 384 dim, ~80MB, default. English-leaning but works on multilingual short text passably.
+- bge-small-en-v1.5    — 384 dim, English-only, often higher recall on technical queries.
+- multilingual-e5-small — 384 dim, better for Korean/English mixed queries; try if recall@5 < 0.8.
+
+Constraints
+- Model is downloaded to HF cache (~/.cache/huggingface/hub) on first use. After that, fully offline.
+- Always pass normalize_embeddings=True when storing for cosine similarity; otherwise scores are noisy.
+- Load the model ONCE per process. Repeated SentenceTransformer(...) calls are slow and waste memory.
+
+Pitfalls
+- The default device is "cpu" on macOS unless you pass device="mps". MPS is faster for batch encoding but has had numerical-stability issues on some torch versions; benchmark before switching.
+- `.encode()` is not async. Wrap in asyncio.to_thread when called from the MCP server.
+- The model returns torch tensors if convert_to_numpy=False — LanceDB wants numpy/list[float32], so keep convert_to_numpy=True.

@@ -1,0 +1,22 @@
+uv quick reference for agents.
+
+Commands
+- uv init                              # create pyproject.toml in cwd
+- uv venv --python 3.13                # create .venv with a specific Python
+- uv sync                              # install deps from pyproject.toml/uv.lock
+- uv add <pkg>                         # add a runtime dep
+- uv add --dev <pkg>                   # add a dev-only dep
+- uv remove <pkg>                      # uninstall + remove from pyproject
+- uv run <cmd>                         # run a command inside the project env
+- uv lock --upgrade                    # refresh uv.lock against latest allowed versions
+- uv tree                              # show the resolved dependency tree
+
+Constraints
+- Never call pip, python -m venv, or poetry inside this project. uv owns the environment.
+- Python version is pinned to 3.13 in pyproject.toml. Do not bump without updating CI assumptions.
+- uv.lock is committed. Treat it like package-lock.json: do not hand-edit.
+
+Pitfalls
+- `uv run python` uses the project env; bare `python` may not. Always go through `uv run`.
+- On macOS arm64, some scientific deps ship wheels that depend on system OpenMP. If install fails, check `brew install libomp` before trying to switch package manager.
+- `uv add` modifies pyproject.toml *and* uv.lock; commit both in the same change.

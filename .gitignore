@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+
+# uv / venv
+.venv/
+
+# LanceDB index (cache; rebuild from corpus with `skill-rag sync`)
+var/
+*.lance/
+
+# OS
+.DS_Store
+
+# IDE
+.idea/
+.vscode/
+
+# Agent operating docs (local-only)
+AGENTS.md
+CLAUDE.md
+.claude/
+.codex/

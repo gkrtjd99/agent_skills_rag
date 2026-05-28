@@ -1,0 +1,31 @@
+LanceDB quick reference for agents.
+
+Commands
+- import lancedb
+- db = lancedb.connect("./var/index.lance")           # open or create on-disk DB
+- tbl = db.create_table("skills", data=records, mode="overwrite")
+- tbl = db.open_table("skills")
+- tbl.add(records)                                    # append rows
+- tbl.merge_insert("name").when_matched_update_all().when_not_matched_insert_all().execute(records)  # upsert
+- tbl.search(query_vector).limit(5).to_list()         # ANN search
+- tbl.create_index(metric="cosine")                   # ANN index (IVF_PQ by default)
+
+Schema patterns
+- Records can be a list[dict], a pyarrow Table, or a pydantic model list.
+- The vector column must be a fixed-size list[float32]. Specify dim at create_table time:
+    schema = pa.schema([
+        pa.field("name", pa.string()),
+        pa.field("description", pa.string()),
+        pa.field("path", pa.string()),
+        pa.field("vector", pa.list_(pa.float32(), <dim>)),
+    ])
+- Use cosine distance for sentence embeddings: tbl.search(...).metric("cosine").
+
+Constraints
+- LanceDB stores everything under the directory passed to connect(). Treat that directory as a cache; commits should not include it.
+- Schema changes require a new table or a migration. Bump a schema_version comment in src/skill_rag/index.py when changing.
+
+Pitfalls
+- create_index() is required for sub-100ms ANN search beyond ~1k rows; for ~50 rows the brute-force path is fine.
+- merge_insert needs a unique key column; we use `name`.
+- On macOS arm64, pin to a recent lancedb version that ships native wheels (avoid building from source).
