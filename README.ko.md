@@ -29,8 +29,8 @@ MCP로 검색해서 적합한 본문만 가져옴. 따라서 처음부터 모든
 ### 1) 코드 + 부트스트랩 스킬
 
 ```bash
-git clone git@github.com:gkrtjd99/agent_skills_rag.git
-cd agent_skills_rag
+git clone <repo-url>
+cd skill_rag
 uv sync
 bash scripts/install.sh
 ```
@@ -121,7 +121,7 @@ description: 한 줄 설명. 검색 정확도가 여기 품질에 좌우됨.
 | `uv run skill-rag sync` | 인덱스 수동 동기화 |
 | `uv run skill-rag query "<text>"` | 검색 결과 확인 |
 | `uv run skill-rag list-skills` | 인덱스된 스킬 목록 |
-| `uv run skill-rag eval` | 평가셋으로 recall@5 측정 |
+| `uv run skill-rag eval` | 공개 fixture 평가셋으로 recall@5 측정 |
 | `uv run skill-rag reset` | 인덱스 초기화 |
 | `uv run skill-rag mcp` | MCP 서버 실행 |
 
@@ -132,8 +132,17 @@ description: 한 줄 설명. 검색 정확도가 여기 품질에 좌우됨.
 | `SKILL_RAG_CORPUS_PATH` | `~/.skills` | corpus 경로 |
 | `SKILL_RAG_INDEX_PATH` | `./var/index.lance` | LanceDB 경로 |
 | `SKILL_RAG_MODEL` | `all-MiniLM-L6-v2` | 임베딩 모델 |
+| `SKILL_RAG_LOCAL_FILES_ONLY` | `1` | 로컬 캐시에서만 임베딩 모델 로드 |
 | `SKILL_RAG_SCORE_THRESHOLD` | `0.25` | 매칭 임계값 (eval 셋 기준 calibration) |
 | `SKILL_RAG_SYNC_TTL` | `30` | sync 캐시 TTL (초) |
+
+`skill-rag eval`은 기본적으로 `eval/fixtures/` 아래의 공개 fixture를 사용하므로
+GitHub에서 받은 사용자도 같은 기준으로 검증할 수 있음. 개인 코퍼스를 점검하려면
+경로를 명시:
+
+```bash
+uv run skill-rag eval --corpus ~/.skills --dataset eval/queries.jsonl
+```
 
 ## 문서
 

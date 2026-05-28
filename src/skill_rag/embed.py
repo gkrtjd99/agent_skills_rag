@@ -6,6 +6,11 @@ from functools import lru_cache
 import numpy as np
 
 DEFAULT_MODEL = os.environ.get("SKILL_RAG_MODEL", "all-MiniLM-L6-v2")
+LOCAL_FILES_ONLY = os.environ.get("SKILL_RAG_LOCAL_FILES_ONLY", "1").lower() not in {
+    "0",
+    "false",
+    "no",
+}
 
 
 @lru_cache(maxsize=4)
@@ -13,7 +18,7 @@ def _load_model(name: str):
     # Imported lazily so importing this module is cheap (helps tests).
     from sentence_transformers import SentenceTransformer
 
-    return SentenceTransformer(name)
+    return SentenceTransformer(name, local_files_only=LOCAL_FILES_ONLY)
 
 
 def model_dim(name: str = DEFAULT_MODEL) -> int:

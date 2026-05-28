@@ -1,20 +1,20 @@
-{"query": "Supabase에서 RLS 정책 설정하는 법", "expected": ["supabase"]}
+{"query": "How do I configure Supabase RLS policies?", "expected": ["supabase"]}
 {"query": "How do I set up Row Level Security in Supabase?", "expected": ["supabase"]}
-{"query": "supabase-js로 로그인/세션 처리", "expected": ["supabase"]}
-{"query": "Next.js에서 @supabase/ssr 쿠키 설정", "expected": ["supabase"]}
-{"query": "Edge Function 배포가 안 됨", "expected": ["supabase"]}
-{"query": "pg_vector extension 활성화", "expected": ["supabase", "supabase-postgres-best-practices"]}
-{"query": "Postgres 인덱스 잘 짜는 법", "expected": ["supabase-postgres-best-practices"]}
+{"query": "Handle login and sessions with supabase-js", "expected": ["supabase"]}
+{"query": "Configure @supabase/ssr cookies in Next.js", "expected": ["supabase"]}
+{"query": "Supabase Edge Function deployment is failing", "expected": ["supabase"]}
+{"query": "Enable the pg_vector extension", "expected": ["supabase", "supabase-postgres-best-practices"]}
+{"query": "Design effective Postgres indexes", "expected": ["supabase-postgres-best-practices"]}
 {"query": "Slow query optimization in Postgres", "expected": ["supabase-postgres-best-practices"]}
-{"query": "EXPLAIN ANALYZE로 쿼리 플랜 읽는 법", "expected": ["supabase-postgres-best-practices"]}
+{"query": "Read a Postgres query plan with EXPLAIN ANALYZE", "expected": ["supabase-postgres-best-practices"]}
 {"query": "connection pooling for postgres", "expected": ["supabase-postgres-best-practices"]}
 {"query": "schema design best practices", "expected": ["supabase-postgres-best-practices"]}
 {"query": "Scaffold agent operating documents for a new repo", "expected": ["harness-init"]}
-{"query": "harness engineering 스타일로 리포지토리 셋업", "expected": ["harness-init"]}
+{"query": "Set up a repository in the harness engineering style", "expected": ["harness-init"]}
 {"query": "ARCHITECTURE.md template", "expected": ["harness-init"]}
-{"query": "Supabase Auth에서 JWT 다루기", "expected": ["supabase"]}
-{"query": "Postgres에서 N+1 쿼리 줄이기", "expected": ["supabase-postgres-best-practices"]}
-{"query": "Realtime 채널 구독이 끊김", "expected": ["supabase"]}
+{"query": "Handle JWTs in Supabase Auth", "expected": ["supabase"]}
+{"query": "Reduce N+1 queries in Postgres", "expected": ["supabase-postgres-best-practices"]}
+{"query": "Supabase Realtime channel subscriptions keep disconnecting", "expected": ["supabase"]}
 {"query": "create a new codex skill", "expected": ["skill-creator"]}
 {"query": "install a codex skill from github", "expected": ["skill-installer"]}
 {"query": "generate an image with AI", "expected": ["imagegen"]}

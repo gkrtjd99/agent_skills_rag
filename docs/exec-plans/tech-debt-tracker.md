@@ -4,7 +4,7 @@
 
 ## Known follow-ups
 
-- Validate `SCORE_THRESHOLD` default against `eval/queries.jsonl` and
-  pin the chosen value in `corpus.py` / `mcp-interface.md`.
 - Codex MCP registration instructions in `scripts/install.sh` are a
   placeholder pointing to Codex docs.
+- Add an explicit model download/setup command so first-time users can satisfy
+  local-only runtime loading without relying on implicit network access.

@@ -44,9 +44,9 @@ retry once before returning `not_found`.
 
 `SCORE_THRESHOLD` (default `0.25`, env `SKILL_RAG_SCORE_THRESHOLD`) filters
 out low-similarity matches in `search_skills`. Calibrated against
-`eval/queries.jsonl`: 0.25 is the highest value that keeps `recall@5 ≥ 0.8`
-(measured recall@5 = 0.864). Re-tune when the eval set or embedding model
-changes.
+the public fixture eval in `eval/fixtures/`: 0.25 keeps `recall@5 ≥ 0.8`
+on the repository-owned benchmark. Re-tune when the eval set or embedding
+model changes.
 
 ## Loop Prevention Contract
 

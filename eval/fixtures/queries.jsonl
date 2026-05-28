@@ -1,0 +1,10 @@
+{"query": "review this pull request for bugs and missing tests", "expected": ["code-review"]}
+{"query": "inspect this implementation for regression risk", "expected": ["code-review"]}
+{"query": "write pytest coverage for this parser", "expected": ["python-testing"]}
+{"query": "debug why this pytest fixture is failing", "expected": ["python-testing"]}
+{"query": "deploy this website and give me the preview URL", "expected": ["web-deployment"]}
+{"query": "publish this site online", "expected": ["web-deployment"]}
+{"query": "create a new Codex skill for database tuning", "expected": ["skill-authoring"]}
+{"query": "improve the SKILL.md description and triggers", "expected": ["skill-authoring"]}
+{"query": "check this repo for leaked API keys or personal paths", "expected": ["local-privacy"]}
+{"query": "scan for secrets or private data before commit", "expected": ["local-privacy"]}

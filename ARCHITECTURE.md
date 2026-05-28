@@ -33,7 +33,7 @@ Each module has one responsibility; only `sync` holds mutable state
    only if more than 30 s have elapsed since the last sync.
 2. `embed.encode_one(query)` — 384-dim L2-normalized vector.
 3. `index.search(vec, k)` — LanceDB cosine, returns `SearchHit[]`.
-4. `retrieve.search` filters out hits below `SCORE_THRESHOLD` (default 0.35).
+4. `retrieve.search` filters out hits below `SCORE_THRESHOLD` (default 0.25).
 5. Returns `{status: "ok", hits}` or `{status: "no_match", hits: [], message}`.
 
 ### `get_skill(name)`
@@ -87,3 +87,5 @@ into every supported harness's auto-load directory by `scripts/install.sh`.
 - Single user, single corpus.
 - Python 3.13 + uv. No `pip` or raw `venv`.
 - `~/.skills/` is user-managed and never committed.
+- Embedding model loading is local-only by default; set
+  `SKILL_RAG_LOCAL_FILES_ONLY=0` only for an explicit model download/setup run.

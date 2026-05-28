@@ -30,7 +30,8 @@ Read documents in the order below before writing code.
 - `mcp__skill-rag__get_skill` returns `{status: "ok"|"not_found", body|message}`.
 - One bootstrap skill in `~/.skills/`, symlinked into Claude Code + Codex, auto-loads in both.
 - File added to `~/.skills/` is reflected in the next `search_skills` call after 30 s.
-- `recall@5 ≥ 0.8` on `eval/queries.jsonl`.
+- `recall@5 ≥ 0.8` on the public fixture eval
+  (`eval/fixtures/queries.jsonl` against `eval/fixtures/skills/`).
 - `p95` search latency `< 1 s` on a ~50-skill corpus.
 - No cloud API calls at index or query time.
 

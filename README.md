@@ -30,8 +30,8 @@ agent → search_skills(query)  ─→ top-k metadata (name, desc, score)
 ### 1) Code + bootstrap skill
 
 ```bash
-git clone git@github.com:gkrtjd99/agent_skills_rag.git
-cd agent_skills_rag
+git clone <repo-url>
+cd skill_rag
 uv sync
 bash scripts/install.sh
 ```
@@ -123,7 +123,7 @@ It is auto-indexed within 30s on the next `search_skills` call.
 | `uv run skill-rag sync` | Manually sync the index |
 | `uv run skill-rag query "<text>"` | Inspect search results |
 | `uv run skill-rag list-skills` | List indexed skills |
-| `uv run skill-rag eval` | Measure recall@5 against the eval set |
+| `uv run skill-rag eval` | Measure recall@5 against the public fixture eval |
 | `uv run skill-rag reset` | Reset the index |
 | `uv run skill-rag mcp` | Run the MCP server |
 
@@ -134,8 +134,17 @@ It is auto-indexed within 30s on the next `search_skills` call.
 | `SKILL_RAG_CORPUS_PATH` | `~/.skills` | Corpus path |
 | `SKILL_RAG_INDEX_PATH` | `./var/index.lance` | LanceDB path |
 | `SKILL_RAG_MODEL` | `all-MiniLM-L6-v2` | Embedding model |
+| `SKILL_RAG_LOCAL_FILES_ONLY` | `1` | Load the embedding model from local cache only |
 | `SKILL_RAG_SCORE_THRESHOLD` | `0.25` | Match threshold (calibrated against the eval set) |
 | `SKILL_RAG_SYNC_TTL` | `30` | Sync cache TTL (seconds) |
+
+`skill-rag eval` defaults to repository-owned fixtures under `eval/fixtures/`
+so GitHub users get the same benchmark. To inspect your personal corpus, pass
+both paths explicitly:
+
+```bash
+uv run skill-rag eval --corpus ~/.skills --dataset eval/queries.jsonl
+```
 
 ## Docs
 

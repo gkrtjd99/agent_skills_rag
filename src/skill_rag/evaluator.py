@@ -4,6 +4,7 @@ import json
 import time
 from dataclasses import dataclass, field
 from pathlib import Path
+from typing import Callable
 
 from . import retrieve
 
@@ -50,9 +51,14 @@ def load_cases(path: Path) -> list[Case]:
     return cases
 
 
-def evaluate(cases: list[Case], k: int = 5) -> Report:
+SearchFn = Callable[[str, int], dict]
+
+
+def evaluate(cases: list[Case], k: int = 5, search_fn: SearchFn | None = None) -> Report:
     if not cases:
         return Report(n=0, k=k, recall_at_k=0.0, mrr=0.0, p50_ms=0.0, p95_ms=0.0)
+    if search_fn is None:
+        search_fn = retrieve.search
 
     hit_count = 0
     rr_sum = 0.0
@@ -61,7 +67,7 @@ def evaluate(cases: list[Case], k: int = 5) -> Report:
 
     for case in cases:
         t0 = time.monotonic()
-        res = retrieve.search(case.query, k=k)
+        res = search_fn(case.query, k)
         latencies.append((time.monotonic() - t0) * 1000.0)
 
         names = [h["name"] for h in res.get("hits", [])]

@@ -30,6 +30,6 @@ on the same machine, all sharing one skill library.
 - Backwards compat with `~/.claude/skills` + `~/.codex/skills` layout.
 
 ## Success Metrics
-- `recall@5 ≥ 0.8` on `eval/queries.jsonl`.
+- `recall@5 ≥ 0.8` on the public fixture eval shipped in this repository.
 - `p95 < 1 s` search latency on a ~50-skill corpus.
 - No cloud API calls in indexing or query paths.

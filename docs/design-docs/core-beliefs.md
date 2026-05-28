@@ -5,7 +5,9 @@ Non-negotiable principles. Changes require explicit user buy-in.
 ## Local-First
 No cloud APIs at index or query time. The user owns their machine, their
 embeddings, and their corpus. Latency is bounded by local hardware, not
-network round trips. Tested via the "no cloud" Done-When criterion.
+network round trips. Runtime model loading defaults to local cache only; any
+model download must be an explicit setup step, not an implicit query/index
+side effect. Tested via the "no cloud" Done-When criterion.
 
 ## Single Global Corpus
 One canonical location for skills: `~/.skills/<name>/SKILL.md`. No

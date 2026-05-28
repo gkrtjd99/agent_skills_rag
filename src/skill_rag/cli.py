@@ -1,14 +1,21 @@
 from __future__ import annotations
 
 import json
+import os
+import tempfile
+from pathlib import Path as _Path
 
 import typer
 
+from . import corpus as corpus_mod
 from . import index as index_mod
 from . import retrieve
 from . import sync as sync_mod
 
 app = typer.Typer(no_args_is_help=True, help="skill_rag — local RAG over ~/.skills.")
+PROJECT_ROOT = _Path(__file__).resolve().parents[2]
+DEFAULT_EVAL_CORPUS = PROJECT_ROOT / "eval" / "fixtures" / "skills"
+DEFAULT_EVAL_DATASET = PROJECT_ROOT / "eval" / "fixtures" / "queries.jsonl"
 
 
 @app.command()
@@ -78,24 +85,50 @@ def mcp():
 
     run()
 
-
-from pathlib import Path as _Path
-
-
 @app.command()
 def eval(
-    dataset: _Path = typer.Option(_Path("eval/queries.jsonl"), "--dataset", "-d"),
+    dataset: _Path = typer.Option(DEFAULT_EVAL_DATASET, "--dataset", "-d"),
+    corpus: _Path = typer.Option(
+        DEFAULT_EVAL_CORPUS,
+        "--corpus",
+        "-c",
+        help="Skill corpus to evaluate. Defaults to the repo fixture corpus.",
+    ),
     k: int = typer.Option(5, "--k", "-k"),
     json_out: bool = typer.Option(False, "--json"),
 ):
-    """Run the evaluation harness."""
+    """Run the evaluation harness against a corpus and query set."""
     from .evaluator import evaluate as _eval, load_cases
+    from .mcp_server import search_skills
 
+    corpus = corpus.expanduser().resolve()
+    dataset = dataset.expanduser().resolve()
     cases = load_cases(dataset)
-    report = _eval(cases, k=k)
+
+    old_corpus = corpus_mod.CORPUS_PATH
+    old_index_env = os.environ.get("SKILL_RAG_INDEX_PATH")
+    try:
+        with tempfile.TemporaryDirectory(prefix="skill-rag-eval-") as tmp:
+            os.environ["SKILL_RAG_INDEX_PATH"] = str(_Path(tmp) / "index.lance")
+            corpus_mod.CORPUS_PATH = corpus
+            sync_mod.reset_cache()
+            report = _eval(cases, k=k, search_fn=search_skills)
+            sync_mod.reset_cache()
+    finally:
+        corpus_mod.CORPUS_PATH = old_corpus
+        if old_index_env is None:
+            os.environ.pop("SKILL_RAG_INDEX_PATH", None)
+        else:
+            os.environ["SKILL_RAG_INDEX_PATH"] = old_index_env
+
     if json_out:
-        typer.echo(json.dumps(report.to_dict(), ensure_ascii=False, indent=2))
+        payload = report.to_dict()
+        payload["dataset"] = str(dataset)
+        payload["corpus"] = str(corpus)
+        typer.echo(json.dumps(payload, ensure_ascii=False, indent=2))
         return
+    typer.echo(f"dataset      = {dataset}")
+    typer.echo(f"corpus       = {corpus}")
     typer.echo(f"n            = {report.n}")
     typer.echo(f"recall@{report.k:<5} = {report.recall_at_k:.3f}")
     typer.echo(f"mrr          = {report.mrr:.3f}")

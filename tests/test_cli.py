@@ -1,4 +1,5 @@
 import pytest
+import json
 from typer.testing import CliRunner
 
 from skill_rag import index as index_mod
@@ -80,3 +81,22 @@ def test_reset_command(tmp_path):
     result = runner.invoke(app, ["reset"])
     assert result.exit_code == 0
     assert index_mod.list_indexed() == []
+
+
+def test_eval_command_uses_explicit_corpus_and_dataset(tmp_path):
+    runner = CliRunner()
+    corpus = tmp_path / "eval-skills"
+    _mk(corpus, "foo", desc="alpha beta testing")
+    dataset = tmp_path / "queries.jsonl"
+    dataset.write_text('{"query": "alpha beta", "expected": ["foo"]}\n')
+
+    result = runner.invoke(
+        app,
+        ["eval", "--corpus", str(corpus), "--dataset", str(dataset), "--json"],
+    )
+
+    assert result.exit_code == 0
+    payload = json.loads(result.stdout)
+    assert payload["recall_at_k"] == 1.0
+    assert payload["corpus"] == str(corpus.resolve())
+    assert payload["dataset"] == str(dataset.resolve())
