@@ -19,7 +19,6 @@ var/
 .vscode/
 
 # Agent operating docs (local-only)
-AGENTS.md
 CLAUDE.md
 .claude/
 .codex/
