@@ -22,7 +22,7 @@ def _load_model(name: str):
 
 
 def model_dim(name: str = DEFAULT_MODEL) -> int:
-    return int(_load_model(name).get_sentence_embedding_dimension())
+    return int(_load_model(name).get_embedding_dimension())
 
 
 def encode(texts: list[str], name: str = DEFAULT_MODEL) -> np.ndarray:

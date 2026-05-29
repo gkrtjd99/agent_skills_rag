@@ -44,7 +44,7 @@ def _open_db():
 
 def open_table(model_name: str = DEFAULT_MODEL):
     db = _open_db()
-    if TABLE_NAME in db.table_names():
+    if TABLE_NAME in db.list_tables().tables:
         return db.open_table(TABLE_NAME)
     return db.create_table(TABLE_NAME, schema=_schema(model_dim(model_name)))
 
@@ -91,7 +91,7 @@ def delete_by_paths(paths: list[str]) -> int:
 
 def reset() -> None:
     db = _open_db()
-    if TABLE_NAME in db.table_names():
+    if TABLE_NAME in db.list_tables().tables:
         db.drop_table(TABLE_NAME)
 
 
