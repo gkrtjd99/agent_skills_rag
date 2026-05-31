@@ -65,6 +65,16 @@ def test_search_on_empty_index():
     assert index_mod.search(vec, k=5) == []
 
 
+def test_search_dim_mismatch_raises_clear_error():
+    import numpy as np
+    index_mod.upsert([_record("foo")])
+    # A query vector of the wrong dimension (e.g. a stale model in a long-lived
+    # server process after the index was rebuilt with a different model).
+    wrong = np.zeros(7, dtype="float32")
+    with pytest.raises(ValueError, match="reindex|dimension|restart"):
+        index_mod.search(wrong, k=5)
+
+
 def test_upsert_stores_full_text_for_lexical_search():
     index_mod.upsert([_record("foo", desc="one liner", body="trigger phrase here")])
     rows = index_mod.list_indexed()

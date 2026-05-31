@@ -113,6 +113,19 @@ def search(query_vector, k: int = 5) -> list[SearchHit]:
     tbl = open_table()
     if tbl.count_rows() == 0:
         return []
+    # Guard the common operational footgun: the index was rebuilt with a
+    # different embedding model (different dim) while a long-lived server still
+    # holds the old model. Without this, lance raises an opaque internal error.
+    col = tbl.schema.field("vector").type
+    index_dim = getattr(col, "list_size", None)
+    query_dim = len(query_vector)
+    if index_dim is not None and query_dim != index_dim:
+        raise ValueError(
+            f"Query vector dimension ({query_dim}) does not match the index "
+            f"({index_dim}). The index was built with a different embedding "
+            f"model. Restart the MCP server (or run `skill-rag reset && sync`) "
+            f"so the query model and the index agree."
+        )
     rows = tbl.search(query_vector).metric("cosine").limit(k).to_list()
     hits: list[SearchHit] = []
     for row in rows:
