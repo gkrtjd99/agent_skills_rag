@@ -1,9 +1,10 @@
 """LanceDB-backed index for skill records.
 
-Schema version: 3
+Schema version: 4
 - v1: pk=name
 - v2: pk=path; added `source` column
 - v3: pk=path; removed `source`, `allowed_tools` (single-corpus design)
+- v4: added `text` column (name+description+body) for BM25 lexical search
 """
 
 from __future__ import annotations
@@ -31,6 +32,7 @@ def _schema(dim: int) -> pa.Schema:
             pa.field("name", pa.string()),
             pa.field("description", pa.string()),
             pa.field("content_hash", pa.string()),
+            pa.field("text", pa.string()),
             pa.field("vector", pa.list_(pa.float32(), dim)),
         ]
     )
@@ -44,16 +46,23 @@ def _open_db():
 
 def open_table(model_name: str = DEFAULT_MODEL):
     db = _open_db()
+    schema = _schema(model_dim(model_name))
     if TABLE_NAME in db.list_tables().tables:
-        return db.open_table(TABLE_NAME)
-    return db.create_table(TABLE_NAME, schema=_schema(model_dim(model_name)))
+        tbl = db.open_table(TABLE_NAME)
+        # Drop and recreate on any schema drift (e.g. a pre-`text` v3 table).
+        # The index is a derived cache — `sync` rebuilds it from the corpus.
+        if list(tbl.schema.names) != list(schema.names):
+            db.drop_table(TABLE_NAME)
+            return db.create_table(TABLE_NAME, schema=schema)
+        return tbl
+    return db.create_table(TABLE_NAME, schema=schema)
 
 
 def list_indexed() -> list[dict]:
     tbl = open_table()
     if tbl.count_rows() == 0:
         return []
-    cols = ["path", "name", "description", "content_hash"]
+    cols = ["path", "name", "description", "content_hash", "text"]
     return tbl.to_arrow().select(cols).to_pylist()
 
 
@@ -61,16 +70,18 @@ def upsert(records: list[SkillRecord], model_name: str = DEFAULT_MODEL) -> None:
     if not records:
         return
     tbl = open_table(model_name)
-    vectors = encode([r.embed_text() for r in records], name=model_name)
+    texts = [r.embed_text() for r in records]
+    vectors = encode(texts, name=model_name)
     rows = [
         {
             "path": r.path,
             "name": r.name,
             "description": r.description,
             "content_hash": r.content_hash,
+            "text": text,
             "vector": vec.tolist(),
         }
-        for r, vec in zip(records, vectors)
+        for r, text, vec in zip(records, texts, vectors)
     ]
     (
         tbl.merge_insert("path")

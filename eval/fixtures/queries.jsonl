@@ -8,3 +8,10 @@
 {"query": "improve the SKILL.md description and triggers", "expected": ["skill-authoring"]}
 {"query": "check this repo for leaked API keys or personal paths", "expected": ["local-privacy"]}
 {"query": "scan for secrets or private data before commit", "expected": ["local-privacy"]}
+{"query": "이 PR에 버그랑 빠진 테스트 있는지 리뷰해줘", "expected": ["code-review"]}
+{"query": "이 구현에 회귀 위험 있는지 점검해줘", "expected": ["code-review"]}
+{"query": "이 파서에 대한 pytest 테스트 좀 짜줘", "expected": ["python-testing"]}
+{"query": "이 웹사이트 배포하고 미리보기 URL 알려줘", "expected": ["web-deployment"]}
+{"query": "사이트를 온라인에 게시하기", "expected": ["web-deployment"]}
+{"query": "데이터베이스 튜닝용 새 스킬을 만들고 싶어", "expected": ["skill-authoring"]}
+{"query": "커밋 전에 유출된 API 키나 개인 경로 스캔", "expected": ["local-privacy"]}

@@ -1,15 +1,19 @@
 from skill_rag.models import SearchHit, SkillRecord
 
 
-def test_skill_record_embed_text():
+def test_skill_record_embed_text_includes_body():
+    # The body carries trigger phrases and examples that the one-line
+    # description omits, so it must be part of the embedded text.
     r = SkillRecord(
         name="brainstorming",
         description="explore ideas",
         path="/tmp/.skills/brainstorming/SKILL.md",
-        body="# body",
+        body="Use when starting a new feature before writing code.",
         content_hash="abc",
     )
-    assert r.embed_text() == "brainstorming\nexplore ideas"
+    text = r.embed_text()
+    assert text.startswith("brainstorming\nexplore ideas")
+    assert "Use when starting a new feature" in text
 
 
 def test_search_hit_fields():

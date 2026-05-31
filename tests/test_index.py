@@ -63,3 +63,35 @@ def test_search_returns_top_k():
 def test_search_on_empty_index():
     vec = encode_one("anything")
     assert index_mod.search(vec, k=5) == []
+
+
+def test_upsert_stores_full_text_for_lexical_search():
+    index_mod.upsert([_record("foo", desc="one liner", body="trigger phrase here")])
+    rows = index_mod.list_indexed()
+    assert len(rows) == 1
+    text = rows[0]["text"]
+    assert "foo" in text
+    assert "one liner" in text
+    assert "trigger phrase here" in text
+
+
+def test_open_table_migrates_legacy_schema(tmp_path):
+    import lancedb
+    import pyarrow as pa
+
+    # Simulate a pre-`text` (v3) table sitting at the index path.
+    db = lancedb.connect(str(index_mod.index_path()))
+    legacy = pa.schema(
+        [
+            pa.field("path", pa.string()),
+            pa.field("name", pa.string()),
+            pa.field("description", pa.string()),
+            pa.field("content_hash", pa.string()),
+            pa.field("vector", pa.list_(pa.float32(), 8)),
+        ]
+    )
+    db.create_table(index_mod.TABLE_NAME, schema=legacy)
+
+    tbl = index_mod.open_table()
+    assert "text" in tbl.schema.names
+    assert tbl.count_rows() == 0
